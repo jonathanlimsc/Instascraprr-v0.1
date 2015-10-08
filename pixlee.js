@@ -115,10 +115,10 @@ Meteor.methods({
         var count = 0;
         //Paginate if created_time is still after the start time (next url)
           do{
-          count++;
+  
           Meteor.call('httpGetInstagram', nextUrl);
-     
-          }while(startUnix<=createdTime && count<100);
+                  count++;
+          }while(startUnix<=createdTime && count<5);
     },
 
     httpGetInstagram: function(url) {
