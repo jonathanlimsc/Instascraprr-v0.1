@@ -1,0 +1,71 @@
+<head>
+    <title>Pixlee InstaScraperr</title>
+</head>
+
+<body>
+</body>
+<!-- Templates -->
+<template name="main">
+    {{> header}}
+    {{> navigation}}
+    {{> form}}
+    {{> gallery}}
+    {{> footer}}
+</template>
+
+<template name="home">
+    <p>This is home truly.</p>
+</template>
+
+<template name="header">
+	<h1>InstaScraperr v0.1</h1> 
+</template>
+
+<template name="footer">
+	<hr/>
+    <p>Copyright &copy; Jonathan Lim 2015</p>
+</template>
+
+<template name="navigation">
+<a href="{{pathFor route='home'}}">Home</a>
+</template>
+
+<template name="form">
+	<div class="form-container">
+        <form class="search-form">
+            <input type="text" name="hashtagField" placeholder="Enter hashtag to search" />
+            {{> datepicker}}
+            <input type="submit" value="Search!" />
+        </form>
+    </div>
+</template>
+<template name="datepicker">
+    <div class="input-daterange input-group" id="datepicker">
+    <input type="text" class="input-sm form-control" name="start" />
+    <span class="input-group-addon">to</span>
+    <input type="text" class="input-sm form-control" name="end" />
+</div>
+</template>
+
+<template name="gallery">
+	<h1>All your photos are belong to us!</h1>
+    Count: {{count}}
+    <div>
+      <ul>
+      {{#each posts}}
+        <li><img src="{{images.standard_resolution.url}}"/></li>
+        {{/each}}
+    </ul>
+        
+      <!--each post has an images object which carries different resolution images, each with its own url -->
+    </div>
+    </template>
+
+
+<!--TODO: login
+<template name="login">
+    {{> header}}
+    <h2>Login</h2>
+    <button class="login-btn">Login!</button>
+</template>
+-->
