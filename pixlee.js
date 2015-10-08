@@ -118,7 +118,7 @@ Meteor.methods({
   
           Meteor.call('httpGetInstagram', nextUrl);
                   count++;
-          }while(startUnix<=createdTime && count<5);
+          }while(startUnix<=createdTime && count<2); //limiting the number of calls to prevent instagram lockout
     },
 
     httpGetInstagram: function(url) {
