@@ -1,14 +1,14 @@
 # Instascraprr-v0.1
-<h1>Instascraprr-v0.1</h1>
+<h4>How to install:</h4>
+<ol>
+  <li> Clone the repo
+  <li> Install Meteor (https://www.meteor.com/)
+  <li> Install dependencies (see list below)
+  <li> Go to the directory of the cloned repo and run "meteor run".
+  <li> Use any browser and navigate to http://localhost:3000/
+<ol>
 
-<h4>How to install:<h4>
-1. Clone the repo
-2. Install Meteor (https://www.meteor.com/)
-3. Install dependencies (see list below)
-4. Go to the directory of the cloned repo and run "meteor run".
-5. Use any browser and navigate to http://localhost:3000/
-
-List of dependencies:
+<h4>List of dependencies:</h4>
 accounts-password            1.1.3  Password support for accounts
 accounts-ui                  1.1.6  Simple templates to add login widgets to an app
 autopublish                  1.0.4  (For prototyping only) Publish the entire database to all clients
