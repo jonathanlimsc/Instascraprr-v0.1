@@ -36,11 +36,8 @@ if (Meteor.isClient) {
               'endUnix' : endUnix
             };
             console.log(timeRange);
-          
-            Meteor.call('clearTimeRangesInDB');
-            Meteor.call('addTimeRangeToDB', timeRange);
             Meteor.call('clearAllDocsInDB');
-            Meteor.call('retrievePostsFromInstagramController', hashTag);
+            Meteor.call('retrievePostsFromInstagramController', hashTag, timeRange);
         }
 
     });
@@ -95,44 +92,35 @@ if (Meteor.isServer) {
     Meteor.startup(function() {
         // code to run on server at startup
 
-        //Add CORS authorisation to app
-        WebApp.connectHandlers.use(function(req, res, next) {
+        //TODO: Add CORS authorisation to app
+       /* WebApp.connectHandlers.use(function(req, res, next) {
             res.setHeader("Access-Control-Allow-Origin", "*");
             return next();
-        });
+        });*/
     });
-      
-}
+    var nextUrl;
+    var earliestCreatedTime;
+    var timeRange;
 
-Meteor.methods({
-    retrievePostsFromInstagramController: function(hashtag){
+    Meteor.methods({
+    retrievePostsFromInstagramController: function(hashtag, range){
      var apiUrl = "" + globalApiUrlStart + hashtag + globalApiUrlEnd;
-        //Get time range to find start time
-        var timeRange = TimeRanges.findOne();
-        console.log("Time range in retrievePostsFromInstagramController: " + timeRange);
-        //Get global collection
-        var global;
-        if(Global.find().count>1){
-          console.log("Error in retrievePostsFromInstagramController: Global collection is greater than 1");
-        }else{
-          global = Global.findOne();
-        }
+        timeRange = range;
+        console.log("timeRange in retrievePostsFromInstagramController: " + timeRange);
         var startUnix = timeRange['startUnix'];
         console.log("StartUnix in retrievePostsFromInstagramController: " + startUnix);
-        var createdTime = global['createdTime'];
-        console.log("createdTime in retrievePostsFromInstagramController: " + createdTime);
-        var nextUrl = global['nextUrl'];
-        console.log(nextUrl);
-        if(!nextUrl){
+        console.log("createdTime in retrievePostsFromInstagramController: " + earliestCreatedTime);
+        console.log("nextUrl in retrievePostsFromInstagramController: " + nextUrl);
+        if(!nextUrl){ //nextUrl is null for first iteration
             nextUrl=apiUrl;
         }
         var count = 0;
         //Paginate if created_time is still after the start time (next url)
           do{
-  
+          console.log("nextUrl in retrievePostsFromInstagramController: " + nextUrl);
           Meteor.call('httpGetInstagram', nextUrl);
                   count++;
-          }while(startUnix<=createdTime && count<1); //limiting the number of calls to prevent instagram lockout
+          }while(startUnix<=createdTime && count<2); //limiting the number of calls to prevent instagram lockout
     },
 
     httpGetInstagram: function(url) {
@@ -143,11 +131,9 @@ Meteor.methods({
                 if (!err) {
                     //Instagram posts array is found in the 'data' key within the 'data' key of the response
                     var json = response['data']['data'];
-                    var nextUrl = response['data']['pagination']['next_url']; 
-                    console.log(nextUrl);
-                    Meteor.call('updateNextUrlInDB', nextUrl); 
+                    nextUrl = response['data']['pagination']['next_url']; 
+                    console.log("NextUrl updated in httpGetInstagram: " + nextUrl);
                     Meteor.call('insertPostsIntoDB', json)
-           
                 } else {
                     console.log(err);
                 }
@@ -156,7 +142,6 @@ Meteor.methods({
     },
     insertPostsIntoDB: function(json) {
       //Retrieve timeRange object from collections
-        var timeRange = TimeRanges.findOne();
         console.log(timeRange);
         var startUnix = timeRange['startUnix'];
         var endUnix = timeRange['endUnix'];
@@ -165,24 +150,13 @@ Meteor.methods({
 
         for (var index in json) { //iterate through json obj using keys. Json contains keys (index) whose value is the insta post obj
             if (json.hasOwnProperty(index)) { //check if json obj actually has that key
-              var createdTime = json[index]['created_time'];
-
-              //Update createdTime in global collection to the createdTime of last post obj in json
-              if(index == jsonSize-1){
-                var globalObjSize = Global.find().count();
-                if(globalObjSize == 1 || globalObjSize == 0){ //Check to see if there is already a global var
-                  Global.upsert({}, {$set: {createdTime: json[index]['created_time']}}); //update createdTime
-                  console.log("Created-time is updated : ");
-                  console.log(Global.find({}).fetch()); 
-                }
-                else{ //invalid size
-                  console.log("Error: Something went wrong. Global collection is larger than 1.");
-                }
-              }
-
-              if(createdTime>=startUnix && createdTime<=endUnix){
+                  if(index==jsonSize-1){
+                  earliestCreatedTime = json[index]['created_time']; //update earliestCreatedTime
+                  console.log("earliestCreatedTime in insertPostsIntoDB: " + earliestCreatedTime);
+            }
+            if(earliestCreatedTime>=startUnix && earliestCreatedTime<=endUnix){
                   Posts.insert(json[index]);
-              } 
+            } 
           }
        }
         var found = Posts.find({
@@ -203,19 +177,9 @@ Meteor.methods({
                     'images.standard_resolution.url': 1
                 }
             });
-      },
-      addTimeRangeToDB: function(timeRange){
-        TimeRanges.insert(timeRange);
-      },
-      clearTimeRangesInDB: function(){
-        TimeRanges.remove({}); //Remove all time ranges in collection
-      },
-      updateNextUrlInDB: function(url){
-        var globalSize = Global.find().count();
-        if(globalSize==0 || globalSize==1){
-          Global.upsert({}, {$set:{'nextUrl': url}});
-        } else{
-          console.log("Error in insertNextUrlIntoDB: Something went wrong. Global collection is larger than 1");
-        }
       }
-});
+  });
+
+      
+}
+
