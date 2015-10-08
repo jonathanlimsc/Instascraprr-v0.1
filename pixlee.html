@@ -50,12 +50,10 @@
 <template name="gallery">
 	<h1>All your photos are belong to us!</h1>
     Count: {{count}}
-    <div>
-      <ul>
+    <div id="gallery">
       {{#each posts}}
-        <li><img src="{{images.standard_resolution.url}}"/></li>
+        <a><a href="{{images.standard_resolution.url}}"><img src="{{images.standard_resolution.url}}"/></a></a>
         {{/each}}
-    </ul>
         
       <!--each post has an images object which carries different resolution images, each with its own url -->
     </div>
