@@ -9,7 +9,7 @@
     {{> header}}
     {{> navigation}}
     {{> form}}
-    {{> gallery id="styled-gallery" options=galleryOptions callbacks="galleryCallbacks"}}
+    {{> gallery}}
     {{> footer}}
 </template>
 
@@ -49,15 +49,21 @@
 
 <template name="gallery">
 	<h1>All your photos are belong to us!</h1>
-    Count: {{count}}
-    <div id="styled-gallery">
-      {{#each posts}}
-        <a><a href="{{link}}"><img alt="{{user.username}} : {{caption.text}}" src="{{images.standard_resolution.url}}"/></a></a>
-        {{/each}}
-    </div>
+    <p>We've got {{count}} images!</p>
+    {{> justifiedGallery}}
     </template>
     
+<template name="justifiedGallery">
+    <div id="jgallery">
+      {{#each posts}}
+            {{> image}}
+        {{/each}}
+    </div>
+</template>
 
+<template name="image">
+    <a><a href="{{link}}"><img alt="{{user.username}} : {{caption.text}}" src="{{images.standard_resolution.url}}"/></a></a>
+</template>
 
 <!--TODO: login
 <template name="login">

@@ -5,26 +5,24 @@ if (Meteor.isClient) {
     //Datepicker
     Template.datepicker.rendered = function() {
         $('.input-daterange').datepicker({
-            orientation: "top auto",
+            orientation: "top auto"
         });
 
     }
-     Template.gallery.rendered = function(){
-      $('#styled-gallery').justifiedGallery(this.data.options); //passed in from main template
-      $('#styled-gallery').on('jg.complete', function(){//render color box
-          //$('#styled-gallery a').swipebox();
-      });
-      
-    };
-
-
-    //Helpers and events
-    Template.main.helpers({
-      galleryOptions : function(){
-        return { rowHeight: 240};
+    Template.image.rendered = function(){
+          $('#jgallery').justifiedGallery({
+            rowHeight: 240,
+            lastRow: 'justify',
+            margins: 0,
+            captions: true,
+            imagesAnimationDuration: 200,
+            captionSettings: {animationDuration: 200, 
+                            visibleOpacity: 0.7,
+                            nonVisibleOpacity: 0.0}
+          });
       }
-  });
-
+    
+    //Helpers and events
     Template.form.events({
         'submit .search-form': function(event) {
             event.preventDefault();
@@ -54,14 +52,13 @@ if (Meteor.isClient) {
             Meteor.call('resetBackEnd');
             Meteor.call('retrievePostsFromInstagramController', hashTag, timeRange);
 
+
         }
 
     });
 
-    Template.gallery.helpers({
+    Template.justifiedGallery.helpers({
         posts: function() {
-          $('#gallery').justifiedGallery({rowHeight: 120 });
-
             return Posts.find({
                   type: 'image'
               }, //criteria
@@ -73,8 +70,11 @@ if (Meteor.isClient) {
                       'link':1 //insta link
                   }
               });
-        },
-        count: function(){
+          }
+    });
+
+    Template.gallery.helpers({
+      count: function(){
           return Posts.find().count();
         }
     });
@@ -106,7 +106,7 @@ if (Meteor.isServer) {
         });*/
     });
     var nextUrl;
-    var earliestCreatedTime = moment.unix(); //initial value
+    var earliestCreatedTime;
     var timeRange;
 
     Meteor.methods({
@@ -121,19 +121,17 @@ if (Meteor.isServer) {
         if(!nextUrl){ //nextUrl is null for first iteration
             nextUrl=apiUrl;
         }
-        var count = 0;
+        console.log("nextUrl in retrievePostsFromInstagramController: " + nextUrl);
+
         //Paginate if created_time is still after the start time (next url)
-          do{
-          console.log("nextUrl in retrievePostsFromInstagramController: " + nextUrl);
-          Meteor.call('httpGetInstagram', nextUrl);
-                  count++;
-          }while(startUnix<=earliestCreatedTime && count<1); //limiting the number of calls to prevent instagram lockout
+        //earliestCreatedTime will be null on the first iteration
+            if(!earliestCreatedTime || startUnix<=earliestCreatedTime){
+                Meteor.call('httpGetInstagram');
+            }
     },
 
-    httpGetInstagram: function(url) {
-        /*TODO: make access token private*/
-        
-        HTTP.get(url, { /*options*/ },
+    httpGetInstagram: function() {     
+        HTTP.get(nextUrl, { /*options*/ },
             function(err, response) {
                 if (!err) {
                     //Instagram posts array is found in the 'data' key within the 'data' key of the response
@@ -177,7 +175,7 @@ if (Meteor.isServer) {
     },
     resetBackEnd: function(){
       nextUrl = null;
-      earliestCreatedTime = moment.unix();
+      earliestCreatedTime;
       timeRange = null;
       Meteor.call('clearAllDocsInDB');
     }
