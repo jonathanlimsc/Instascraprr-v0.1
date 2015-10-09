@@ -2,22 +2,28 @@
 //Client
 if (Meteor.isClient) {
 
-    Meteor.call('getPostsForGallery', function(err, result){
-      Session.set('postsCursor', result);
-    });
-
     //Datepicker
     Template.datepicker.rendered = function() {
         $('.input-daterange').datepicker({
-            orientation: "top auto"
+            orientation: "top auto",
         });
+
     }
+     Template.gallery.rendered = function(){
+      $('#styled-gallery').justifiedGallery(this.data.options); //passed in from main template
+      /*$('#styled-gallery').on('jg.complete', function(){//render color box
+          $('#styled-gallery a').swipebox();
+      });
+      */
+    };
 
 
     //Helpers and events
     Template.main.helpers({
-
-    });
+      galleryOptions : function(){
+        return { rowHeight: 240};
+      }
+  });
 
     Template.form.events({
         'submit .search-form': function(event) {
@@ -36,40 +42,32 @@ if (Meteor.isClient) {
               'endUnix' : endUnix
             };
             console.log(timeRange);
-            Meteor.call('clearAllDocsInDB');
+            Meteor.call('resetBackEnd');
             Meteor.call('retrievePostsFromInstagramController', hashTag, timeRange);
+
         }
 
     });
 
     Template.gallery.helpers({
         posts: function() {
-          return Posts.find({
-                type: 'image'
-            }, //criteria
-            {
-                fields: {
-                    'images.standard_resolution.url': 1
-                }
-            });
+          $('#gallery').justifiedGallery({rowHeight: 120 });
+
+            return Posts.find({
+                  type: 'image'
+              }, //criteria
+              {
+                  fields: {
+                      'user.username' : 1,
+                      'images.standard_resolution.url': 1,
+                      'caption.text':1,
+                      'link':1 //insta link
+                  }
+              });
         },
         count: function(){
           return Posts.find().count();
-        },
-
-        galleryOptions: function () {
-        return {
-          rowHeight: 240,
-          events: {
-            'jg.complete': function () {
-              $('#justified-gallery a').swipebox({
-                useSVG: false
-              });
-            }
-          }
-        };
-      }
-
+        }
     });
 
     /* TODO: login
@@ -99,7 +97,7 @@ if (Meteor.isServer) {
         });*/
     });
     var nextUrl;
-    var earliestCreatedTime = moment().unix(); //initialise as present time
+    var earliestCreatedTime;
     var timeRange;
 
     Meteor.methods({
@@ -120,7 +118,7 @@ if (Meteor.isServer) {
           console.log("nextUrl in retrievePostsFromInstagramController: " + nextUrl);
           Meteor.call('httpGetInstagram', nextUrl);
                   count++;
-          }while(startUnix<=earliestCreatedTime && count<2); //limiting the number of calls to prevent instagram lockout
+          }while(startUnix<=earliestCreatedTime && count<1); //limiting the number of calls to prevent instagram lockout
     },
 
     httpGetInstagram: function(url) {
@@ -154,30 +152,26 @@ if (Meteor.isServer) {
                   earliestCreatedTime = json[index]['created_time']; //update earliestCreatedTime
                   console.log("earliestCreatedTime in insertPostsIntoDB: " + earliestCreatedTime);
             }
-            if(earliestCreatedTime>=startUnix && earliestCreatedTime<=endUnix){
+            //if(earliestCreatedTime>=startUnix && earliestCreatedTime<=endUnix){
                   Posts.insert(json[index]);
-            } 
+            //} 
           }
        }
         var found = Posts.find({
             type: "image"
         }).fetch();
         console.log("Found number of posts in insertPostsIntoDB: " + found.length);
-
     },
     clearAllDocsInDB: function() {
         Posts.remove({}); //Remove all documents in collection
     },
-    getPostsForGallery: function() {
-            return Posts.find({
-                type: 'image'
-            }, //criteria
-            {
-                fields: {
-                    'images.standard_resolution.url': 1
-                }
-            });
-      }
+    resetBackEnd: function(){
+      nextUrl = null;
+      earliestCreatedTime = moment.unix();
+      timeRange = null;
+      Meteor.call('clearAllDocsInDB');
+    }
+    
   });
 
       

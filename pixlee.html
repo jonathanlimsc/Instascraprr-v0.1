@@ -9,7 +9,7 @@
     {{> header}}
     {{> navigation}}
     {{> form}}
-    {{> gallery}}
+    {{> gallery id="styled-gallery" options=galleryOptions callbacks="galleryCallbacks"}}
     {{> footer}}
 </template>
 
@@ -50,14 +50,13 @@
 <template name="gallery">
 	<h1>All your photos are belong to us!</h1>
     Count: {{count}}
-    <div id="gallery">
+    <div id="styled-gallery">
       {{#each posts}}
-        <a><a href="{{images.standard_resolution.url}}"><img src="{{images.standard_resolution.url}}"/></a></a>
+        <a><a href="{{link}}"><img alt="{{user.username}} : {{caption.text}}" src="{{images.standard_resolution.url}}"/>{{user.username}}</a></a>
         {{/each}}
-        
-      <!--each post has an images object which carries different resolution images, each with its own url -->
     </div>
     </template>
+    
 
 
 <!--TODO: login
