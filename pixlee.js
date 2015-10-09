@@ -99,7 +99,7 @@ if (Meteor.isServer) {
         });*/
     });
     var nextUrl;
-    var earliestCreatedTime;
+    var earliestCreatedTime = moment().unix(); //initialise as present time
     var timeRange;
 
     Meteor.methods({
@@ -109,7 +109,7 @@ if (Meteor.isServer) {
         console.log("timeRange in retrievePostsFromInstagramController: " + timeRange);
         var startUnix = timeRange['startUnix'];
         console.log("StartUnix in retrievePostsFromInstagramController: " + startUnix);
-        console.log("createdTime in retrievePostsFromInstagramController: " + earliestCreatedTime);
+        console.log("earliestCreatedTime in retrievePostsFromInstagramController: " + earliestCreatedTime);
         console.log("nextUrl in retrievePostsFromInstagramController: " + nextUrl);
         if(!nextUrl){ //nextUrl is null for first iteration
             nextUrl=apiUrl;
@@ -120,7 +120,7 @@ if (Meteor.isServer) {
           console.log("nextUrl in retrievePostsFromInstagramController: " + nextUrl);
           Meteor.call('httpGetInstagram', nextUrl);
                   count++;
-          }while(startUnix<=createdTime && count<2); //limiting the number of calls to prevent instagram lockout
+          }while(startUnix<=earliestCreatedTime && count<2); //limiting the number of calls to prevent instagram lockout
     },
 
     httpGetInstagram: function(url) {
@@ -162,7 +162,7 @@ if (Meteor.isServer) {
         var found = Posts.find({
             type: "image"
         }).fetch();
-        console.log(found.length);
+        console.log("Found number of posts in insertPostsIntoDB: " + found.length);
 
     },
     clearAllDocsInDB: function() {
