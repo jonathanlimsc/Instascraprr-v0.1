@@ -11,10 +11,10 @@ if (Meteor.isClient) {
     }
      Template.gallery.rendered = function(){
       $('#styled-gallery').justifiedGallery(this.data.options); //passed in from main template
-      /*$('#styled-gallery').on('jg.complete', function(){//render color box
-          $('#styled-gallery a').swipebox();
+      $('#styled-gallery').on('jg.complete', function(){//render color box
+          //$('#styled-gallery a').swipebox();
       });
-      */
+      
     };
 
 
@@ -31,10 +31,19 @@ if (Meteor.isClient) {
             //Processing hashtag and dates
             var hashTag = event.target.hashtagField.value;
             console.log('Form text: ' + hashTag);
-            var startDate = event.target.start.value + " 00:00:00";
+            var startDate = event.target.start.value;
+            if(startDate === ""){
+              startDate = moment().format("MM/DD/YYYY");
+            }
+            startDate = startDate + " 00:00:00";
             var startUnix = moment(startDate, "MM-DD-YYYY HH:mm:ss").unix();
+
             console.log('Start date: ' + startDate + " " + startUnix);
-            var endDate = event.target.end.value + " 23:59:59";
+            var endDate = event.target.end.value; + " 23:59:59";
+            if(endDate === ""){
+              endDate = moment().format("MM/DD/YYYY");
+            }
+            endDate = endDate + " 23:59:59";
             var endUnix = moment(endDate, "MM-DD-YYYY HH:mm:ss").unix();
             console.log('End date: ' + endDate + " " + endUnix);
             var timeRange = {
@@ -97,7 +106,7 @@ if (Meteor.isServer) {
         });*/
     });
     var nextUrl;
-    var earliestCreatedTime;
+    var earliestCreatedTime = moment.unix(); //initial value
     var timeRange;
 
     Meteor.methods({
@@ -147,14 +156,15 @@ if (Meteor.isServer) {
         console.log("Json size: " + jsonSize);
 
         for (var index in json) { //iterate through json obj using keys. Json contains keys (index) whose value is the insta post obj
+            var createdTimeOfPost = json[index]['created_time'];
             if (json.hasOwnProperty(index)) { //check if json obj actually has that key
                   if(index==jsonSize-1){
-                  earliestCreatedTime = json[index]['created_time']; //update earliestCreatedTime
+                  earliestCreatedTime = createdTimeOfPost; //update earliestCreatedTime
                   console.log("earliestCreatedTime in insertPostsIntoDB: " + earliestCreatedTime);
             }
-            //if(earliestCreatedTime>=startUnix && earliestCreatedTime<=endUnix){
+            if(createdTimeOfPost>=startUnix && createdTimeOfPost<=endUnix){
                   Posts.insert(json[index]);
-            //} 
+            } 
           }
        }
         var found = Posts.find({
