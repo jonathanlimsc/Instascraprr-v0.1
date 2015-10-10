@@ -9,7 +9,6 @@ insecure
 accounts-ui
 accounts-password
 jquery
-iron:router
 standard-minifiers
 meteor-base
 mobile-experience

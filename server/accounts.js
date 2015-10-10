@@ -1,3 +1,4 @@
+/*
 ServiceConfiguration.configurations.remove({
     service: "instagram"
   });
@@ -7,7 +8,7 @@ ServiceConfiguration.configurations.remove({
     scope:'basic',
     secret: "1902fd74d56d424f8e32b331aeecb63f"
   });
-/*
+
   //code: 14c3c1cd59c141c99d7d064ba22e9e1f
   curl -F 'client_id='362593ba92794e5fad861f2db42fc8db' \
     -F 'client_secret=1902fd74d56d424f8e32b331aeecb63f' \

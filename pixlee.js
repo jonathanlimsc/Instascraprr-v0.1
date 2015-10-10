@@ -1,7 +1,14 @@
 
 //Client
 if (Meteor.isClient) {
-
+    
+    $(window).scroll(function() {
+    if($(window).scrollTop() + $(window).height() == $(document).height()) {
+            console.log('bottom reached');
+            //Meteor.call('httpGetInstagram');
+        $('#jgallery').justifiedGallery('norewind');
+      }
+    });
     //Datepicker
     Template.datepicker.rendered = function() {
         $('.input-daterange').datepicker({
@@ -21,21 +28,9 @@ if (Meteor.isClient) {
                             visibleOpacity: 0.7,
                             nonVisibleOpacity: 0.0}
           });
-          $('#jgallery').justifiedGallery('norepeat');
-          //TODO: infinite scrolling not working
-    } 
-
-    Template.main.rendered = function(){
-    //Updating waypoint for every image rendered: 
-    //BUG: Meteor doesn't play nice with JQuery, template only rendered once
-           var waypoint = new Waypoint({
-            element: $('#jgallery').get(0),
-            handler: function(){
-              console.log('Hit waypoint!');
-            },
-            offset: 'bottom-in-view'
-            }) 
-          }     
+          //TODO: infinite scrolling not working and Load more causes page
+          //to jump up to the top of the screen
+    }
 
     //Helpers and events
     Template.form.events({
@@ -75,7 +70,7 @@ if (Meteor.isClient) {
 
     Template.justifiedGallery.helpers({
         posts: function() {
-            return Posts.find({
+            var found = Posts.find({
                   type: 'image'
               }, //criteria
               {
@@ -86,6 +81,7 @@ if (Meteor.isClient) {
                       'link':1 //insta link
                   }
               });
+            return found;
           }
     });
 
@@ -96,7 +92,7 @@ if (Meteor.isClient) {
     });
 
     Template.loader.events({
-      'click .loader-button': function(){
+      'click .loader-button': function(event){
         Meteor.call('httpGetInstagram');
       }
     });
@@ -118,7 +114,7 @@ if (Meteor.isClient) {
 
 //Server
 if (Meteor.isServer) {
-    Meteor.startup(function() {
+   // Meteor.startup(function() {
         // code to run on server at startup
 
         //TODO: Add CORS authorisation to app
@@ -126,7 +122,7 @@ if (Meteor.isServer) {
             res.setHeader("Access-Control-Allow-Origin", "*");
             return next();
         });*/
-    });
+    //});
     var nextUrl;
     var earliestCreatedTime;
     var startDate;
@@ -195,6 +191,7 @@ if (Meteor.isServer) {
         Posts.remove({}); //Remove all documents in collection
     },
     resetBackEnd: function(){
+      id = 0;
       nextUrl = null;
       earliestCreatedTime;
       startDate = null;

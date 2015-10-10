@@ -3,6 +3,7 @@
 </head>
 
 <body>
+{{> main}}
 </body>
 <!-- Templates -->
 <template name="main">
@@ -52,14 +53,10 @@
 </template>
 
 <template name="gallery">
-
-        
-        <button class="btn btn-primary count-button" type="button">
-            We've got photos! <span class="badge">{{count}}</span>
-        </button>
-        <br>
-
-        {{> justifiedGallery}}
+    <button class="btn btn-primary count-button" type="button">
+       We've got photos! <span class="badge">{{count}}</span>
+    </button>
+    {{> justifiedGallery}}
     </template>
     
 <template name="justifiedGallery">
