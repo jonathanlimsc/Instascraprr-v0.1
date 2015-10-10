@@ -9,6 +9,7 @@ if (Meteor.isClient) {
         });
 
     }
+    //Justified gallery
     Template.image.rendered = function(){
           $('#jgallery').justifiedGallery({
             rowHeight: 240,
@@ -20,8 +21,22 @@ if (Meteor.isClient) {
                             visibleOpacity: 0.7,
                             nonVisibleOpacity: 0.0}
           });
-      }
-    
+          $('#jgallery').justifiedGallery('norepeat');
+          //TODO: infinite scrolling not working
+    } 
+
+    Template.main.rendered = function(){
+    //Updating waypoint for every image rendered: 
+    //BUG: Meteor doesn't play nice with JQuery, template only rendered once
+           var waypoint = new Waypoint({
+            element: $('#jgallery').get(0),
+            handler: function(){
+              console.log('Hit waypoint!');
+            },
+            offset: 'bottom-in-view'
+            }) 
+          }     
+
     //Helpers and events
     Template.form.events({
         'submit .search-form': function(event) {
@@ -37,6 +52,7 @@ if (Meteor.isClient) {
             var startUnix = moment(startDate, "MM-DD-YYYY HH:mm:ss").unix();
 
             console.log('Start date: ' + startDate + " " + startUnix);
+            /*FOR DATE RANGE FUNCTIONALITY
             var endDate = event.target.end.value; + " 23:59:59";
             if(endDate === ""){
               endDate = moment().format("MM/DD/YYYY");
@@ -48,9 +64,9 @@ if (Meteor.isClient) {
               'startUnix' : startUnix,
               'endUnix' : endUnix
             };
-            console.log(timeRange);
+            console.log(timeRange);*/
             Meteor.call('resetBackEnd');
-            Meteor.call('retrievePostsFromInstagramController', hashTag, timeRange);
+            Meteor.call('retrievePostsFromInstagramController', hashTag, startUnix);
 
 
         }
@@ -77,6 +93,12 @@ if (Meteor.isClient) {
       count: function(){
           return Posts.find().count();
         }
+    });
+
+    Template.loader.events({
+      'click .loader-button': function(){
+        Meteor.call('httpGetInstagram');
+      }
     });
 
     /* TODO: login
@@ -107,15 +129,13 @@ if (Meteor.isServer) {
     });
     var nextUrl;
     var earliestCreatedTime;
-    var timeRange;
+    var startDate;
 
     Meteor.methods({
-    retrievePostsFromInstagramController: function(hashtag, range){
+    retrievePostsFromInstagramController: function(hashtag, startUnix){
      var apiUrl = "" + globalApiUrlStart + hashtag + globalApiUrlEnd;
-        timeRange = range;
-        console.log("timeRange in retrievePostsFromInstagramController: " + timeRange);
-        var startUnix = timeRange['startUnix'];
-        console.log("StartUnix in retrievePostsFromInstagramController: " + startUnix);
+        startDate = startUnix;
+        console.log("startDate in retrievePostsFromInstagramController: " + startDate);
         console.log("earliestCreatedTime in retrievePostsFromInstagramController: " + earliestCreatedTime);
         console.log("nextUrl in retrievePostsFromInstagramController: " + nextUrl);
         if(!nextUrl){ //nextUrl is null for first iteration
@@ -130,7 +150,10 @@ if (Meteor.isServer) {
             }
     },
 
-    httpGetInstagram: function() {     
+    httpGetInstagram: function() {
+        if(!nextUrl){
+          return;
+        }     
         HTTP.get(nextUrl, { /*options*/ },
             function(err, response) {
                 if (!err) {
@@ -146,10 +169,8 @@ if (Meteor.isServer) {
 
     },
     insertPostsIntoDB: function(json) {
-      //Retrieve timeRange object from collections
-        console.log(timeRange);
-        var startUnix = timeRange['startUnix'];
-        var endUnix = timeRange['endUnix'];
+      //Retrieve timeRange object from collection
+      console.log('startDate in insertPostsIntoDB :' + startDate);
         var jsonSize = Object.keys(json).length;
         console.log("Json size: " + jsonSize);
 
@@ -160,7 +181,7 @@ if (Meteor.isServer) {
                   earliestCreatedTime = createdTimeOfPost; //update earliestCreatedTime
                   console.log("earliestCreatedTime in insertPostsIntoDB: " + earliestCreatedTime);
             }
-            if(createdTimeOfPost>=startUnix && createdTimeOfPost<=endUnix){
+            if(createdTimeOfPost>=startDate){
                   Posts.insert(json[index]);
             } 
           }
@@ -176,7 +197,7 @@ if (Meteor.isServer) {
     resetBackEnd: function(){
       nextUrl = null;
       earliestCreatedTime;
-      timeRange = null;
+      startDate = null;
       Meteor.call('clearAllDocsInDB');
     }
     

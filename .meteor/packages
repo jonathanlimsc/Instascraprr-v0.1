@@ -26,7 +26,6 @@ check
 bozhao:accounts-instagram
 service-configuration
 rajit:bootstrap3-datepicker
-mrt:bootstrap-3
 http
 webapp
 json
@@ -37,3 +36,5 @@ meteorhacks:npm
 
 npm-container
 anbuselvan:justified-gallery
+bigu:waypoints
+mizzao:bootstrap-3

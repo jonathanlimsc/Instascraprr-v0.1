@@ -1,56 +1,65 @@
 <head>
-    <title>Pixlee InstaScraperr</title>
+    <title>Jonstagram 0.1</title>
 </head>
 
 <body>
 </body>
 <!-- Templates -->
 <template name="main">
+    <div>
+    {{> nav}}
     {{> header}}
-    {{> navigation}}
-    {{> form}}
     {{> gallery}}
+    {{> loader}}
     {{> footer}}
-</template>
-
-<template name="home">
-    <p>This is home truly.</p>
+    </div>
 </template>
 
 <template name="header">
-	<h1>InstaScraperr v0.1</h1> 
+    <div class="jumbotron">
+      <h1>All your photos are belong to us!</h1>
+      <p>An instagram scraper that returns tagged posts from the present to a specified date in the past</p>
+    </div>
 </template>
 
 <template name="footer">
 	<hr/>
-    <p>Copyright &copy; Jonathan Lim 2015</p>
+    <div id="footer-waypoint">
+        <p>Copyright &copy; Jonathan Lim 2015</p>
+    </div>
 </template>
+<template name="nav">
+    <nav class="navbar navbar-inverse navigation">
+        <div class="container-fluid">
+            <a class="navbar-brand">Jonstagram v0.1</a>
+            {{> form}}
+        </div>
+    </nav>
 
-<template name="navigation">
-<a href="{{pathFor route='home'}}">Home</a>
 </template>
 
 <template name="form">
-	<div class="form-container">
-        <form class="search-form">
-            <input type="text" name="hashtagField" placeholder="Enter hashtag to search" />
+    <form class="navbar-form navbar-left search-form">
+            <input class="form-control" type="text" name="hashtagField" placeholder="Enter tag e.g. ootd">
             {{> datepicker}}
-            <input type="submit" value="Search!" />
-        </form>
-    </div>
+            <button class="btn btn-danger glyphicon glyphicon-search" type="submit"></button>
+    </form>
 </template>
 <template name="datepicker">
-    <div class="input-daterange input-group" id="datepicker">
-    <input type="text" class="input-sm form-control" name="start" />
-    <span class="input-group-addon">to</span>
-    <input type="text" class="input-sm form-control" name="end" />
+    <div class="col-sm-4 input-daterange input-group" id="datepicker">
+    <input type="text" class="form-control" name="start" />
 </div>
 </template>
 
 <template name="gallery">
-	<h1>All your photos are belong to us!</h1>
-    <p>We've got {{count}} images!</p>
-    {{> justifiedGallery}}
+
+        
+        <button class="btn btn-primary count-button" type="button">
+            We've got photos! <span class="badge">{{count}}</span>
+        </button>
+        <br>
+
+        {{> justifiedGallery}}
     </template>
     
 <template name="justifiedGallery">
@@ -64,6 +73,12 @@
 <template name="image">
     <a><a href="{{link}}"><img alt="{{user.username}} : {{caption.text}}" src="{{images.standard_resolution.url}}"/></a></a>
 </template>
+
+<template name="loader">
+    <button class="btn btn-danger loader-button" type="button">
+            Load more...</button>
+</template>
+
 
 <!--TODO: login
 <template name="login">
