@@ -1,4 +1,4 @@
-# Instascraprr-v0.1
+# Instascraprr-v0.1 / Jonstagram
 <ol>
 <h4><li>How to install:</li></h4>
 <ol>
