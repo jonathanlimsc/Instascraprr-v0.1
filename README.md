@@ -1,6 +1,6 @@
 # Instascraprr-v0.1
 <ol>
-</l4><li>How to install:</li></h4>
+<h4><li>How to install:</li></h4>
 <ol>
   <li> Clone the repo
   <li> Install Meteor (https://www.meteor.com/)
