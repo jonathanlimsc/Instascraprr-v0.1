@@ -8,7 +8,7 @@
   <li> Use any browser and navigate to http://localhost:3000/
 </ol>
 <h4>Meteor packages to install explicitly:</h4>
-<h5>meteor add <package name> e.g. meteor add momentjs:moment</h5>
+<h5>meteor add "package:name" e.g. meteor add momentjs:moment</h5>
 <ul>
 <li>momentjs:moment              2.10.6</li>
 <li>micah:justified-gallery      0.0.4</li>
