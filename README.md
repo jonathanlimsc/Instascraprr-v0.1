@@ -1,6 +1,6 @@
 # Instascraprr-v0.1
 <ol>
-<li><h4>How to install:</h4></li>
+</l4><li>How to install:</li></h4>
 <ol>
   <li> Clone the repo
   <li> Install Meteor (https://www.meteor.com/)
@@ -8,7 +8,7 @@
   <li> Go to the directory of the cloned repo and run "meteor run".
   <li> Use any browser and navigate to http://localhost:3000/
 </ol>
-<li><h4>Meteor packages to install explicitly:</h4></li>
+<h4><li>Meteor packages to install explicitly:</li></h4>
 <h5>meteor add "package:name" e.g. meteor add momentjs:moment</h5>
 <ul>
 <li>momentjs:moment</li>
@@ -18,7 +18,7 @@
 <li>jquery</li>
 </ul>
 
-<li><h4>Complete list of dependencies:</h4></li>
+<h4><li>Complete list of dependencies:</li></h4>
 <ul>
 <li>blaze-html-templates</li>
 <li>check</li>
