@@ -6,17 +6,20 @@
   <li> Install dependencies (see list below)
   <li> Go to the directory of the cloned repo and run "meteor run".
   <li> Use any browser and navigate to http://localhost:3000/
-<ol>
-<h4>Meteor packages to install:</h4>
+</ol>
+<h4>Meteor packages to install explicitly:</h4>
 <h2>meteor add <package name> e.g. meteor add momentjs:moment</h2>
 <ul>
 <li>momentjs:moment              2.10.6</li>
 <li>micah:justified-gallery      0.0.4</li>
 <li>mizzao:bootstrap-3           0.3.8</li>
+<li>http                         1.1.1</li>
+<li>jquery                       1.11.4</li>
+
 </ul>
 
 <h4>Complete list of dependencies:</h4>
-<ol>
+<ul>
 <li>blaze-html-templates         1.0.1  Compile HTML templates into reactive UI with Meteor Blaze</li>
 <li>check                        1.0.6  Check whether a value matches a pattern</li>
 <li>ejson                        1.0.7  Extended and Extensible JSON library</li>
@@ -40,4 +43,4 @@
 <li>standard-minifiers           1.0.1  Standard minifiers used with Meteor apps by default.</li>
 <li>tracker                      1.0.9  Dependency tracker to allow reactive callbacks</li>
 <li>webapp                       1.2.2  Serves a Meteor app over HTTP</li>
-</ol>
+</ul>
