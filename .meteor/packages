@@ -9,7 +9,6 @@ insecure
 accounts-ui
 accounts-password
 jquery
-iron:router
 standard-minifiers
 meteor-base
 mobile-experience
@@ -26,9 +25,13 @@ check
 bozhao:accounts-instagram
 service-configuration
 rajit:bootstrap3-datepicker
-mrt:bootstrap-3
 http
 webapp
 json
 micah:justified-gallery
 momentjs:moment
+
+
+anbuselvan:justified-gallery
+bigu:waypoints
+mizzao:bootstrap-3
