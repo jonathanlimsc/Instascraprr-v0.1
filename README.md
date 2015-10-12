@@ -8,14 +8,13 @@
   <li> Use any browser and navigate to http://localhost:3000/
 </ol>
 <h4>Meteor packages to install explicitly:</h4>
-<h2>meteor add <package name> e.g. meteor add momentjs:moment</h2>
+<h5>meteor add <package name> e.g. meteor add momentjs:moment</h5>
 <ul>
 <li>momentjs:moment              2.10.6</li>
 <li>micah:justified-gallery      0.0.4</li>
 <li>mizzao:bootstrap-3           0.3.8</li>
 <li>http                         1.1.1</li>
 <li>jquery                       1.11.4</li>
-
 </ul>
 
 <h4>Complete list of dependencies:</h4>
